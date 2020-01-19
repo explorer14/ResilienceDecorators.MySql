@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ResilienceDecorators.MySql</name>
+    </assembly>
+    <members>
+        <member name="T:ResilienceDecorators.MySql.ResilienceSettings">
+            <summary>
+            Resilience settings to use while creating resilience policies
+            </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilienceSettings.#ctor">
+            <summary>
+            Uses the default value for retry count = 5 and interval factor = 5. These defaults will
+            create retries at 5s, 10s, 15, 20s, 25s which should be enough time to recover from an
+            instance reboot or failover
+            </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilienceSettings.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Override the defaults with custom values
+            </summary>
+            <param name="retryCount">How many times to retry upon initial failure?</param>
+            <param name="retryIntervalFactor">
+            What factor to multiply the intervals between retries by?
+            </param>
+        </member>
+        <member name="P:ResilienceDecorators.MySql.ResilienceSettings.RetryCount">
+            <summary>
+            The number of retries to be executed after the initial failure.
+            Default value is 5
+            </summary>
+        </member>
+        <member name="P:ResilienceDecorators.MySql.ResilienceSettings.RetryIntervalFactor">
+            <summary>
+            The interval between retries (in seconds) = retryAttempt * RetryIntervalFactor.
+            The higher the value of this property, the higher the delay between retries.
+            Default value is 5 (i.e. retry with a delay increasing by 5 second)
+            to prevent rapid retries which will likely fail
+            and eliminate benefits of a retry policy
+            </summary>
+        </member>
+        <member name="P:ResilienceDecorators.MySql.ResilienceSettings.DefaultFailoverResilienceSettings">
+            <summary>
+            Convenience property to call when using the default settings
+            </summary>
+        </member>
+        <member name="T:ResilienceDecorators.MySql.ResilientMySqlCommand">
+             <summary>
+             <para>
+                 A resilient decorator around the native MySqlCommand class. Uses Polly retry policy to retry
+                 failed commands in case of database failover errors. The retries are configurable and will
+                 always default to 3 if not provided explicitly.
+             </para>
+             
+             <para>
+                 The reason to write this decorator is that the native .NET driver doesn't seem to provide
+                 any failover handling. What's there with the ReplicationManager etc is complicated and
+                 requires to set up alternative hosts in the connection string.
+            
+                 This is not always possible for e.g. AWS Aurora only exposes a reader and a writer endpoint
+                 and many times, a writer is all you need since it can do both reads and writes. It is then
+                 upto the client application to handle failover scenarios themselves by attempting to reconnect.
+             </para>
+             
+             <para>
+                 Resilience should be almost transparent for the consumer and not be
+                 smeared throughout the whole code with Polly's often verbose syntax.
+                 Hence this decorator!
+                 
+                 PLEASE NB: If you are using Dapper or other ORMs to talk to MySql this decorator will not
+                 work since Dapper extensions are on MySqlConnection instance whereas this decorator is
+                 around MySqlCommand instance. Also because I wanted to keep as much stuff native as possible.
+             </para>
+             </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder.ForCommand(System.String)">
+            <summary>
+            For both SELECT and INSERT/UPDATE/DELETE commands
+            </summary>
+            <param name="commandText">The SQL statement you want to execute</param>
+            <returns><see cref="T:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder"/></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder.WithResilienceSettings(ResilienceDecorators.MySql.ResilienceSettings)">
+            <summary>
+            Resilience settings are optional but not avoidable
+            (kinda the point of this exercise). If null, default
+            resilience settings will be used.
+            </summary>
+            <param name="resilienceSettings"><see cref="T:ResilienceDecorators.MySql.ResilienceSettings"/></param>
+            <returns><see cref="T:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder"/></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder.WithOnRetryAction(System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            If you want to log retries or do something else when a retry
+            occurs, you can pass a custom retry Action which will be invoked.
+            </summary>
+            <param name="onRetry"><see cref="T:System.Action`2"/></param>
+            <returns><see cref="T:ResilienceDecorators.MySql.ResilientMySqlCommandBuilder"/></returns>
+        </member>
+        <member name="T:ResilienceDecorators.MySql.ResilientMySqlConnection">
+             <summary>
+             <para>
+                 A resilient decorator around the native MySqlConnection class. Uses Polly retry policy to
+                 retry failed connection attempts during database failover/reboot errors. The retries are
+                 configurable and will always default to 3 if not provided explicitly.
+             </para>
+            
+             <para>
+                 The reason to write this decorator is that the native .NET driver doesn't seem to provide
+                 any failover handling. What's there with the ReplicationManager etc is complicated and
+                 requires to set up alternative hosts in the connection string.
+            
+                 This is not always possible for e.g. AWS Aurora only exposes a reader and a writer endpoint
+                 and many times, a writer is all you need since it can do both reads and writes. It is then
+                 upto the client application to handle failover scenarios themselves by attempting to reconnect.
+             </para>
+            
+             <para>
+                 Resilience should be almost transparent for the consumer and not be
+                 smeared throughout the whole code with Polly's often verbose syntax.
+                 Hence this decorator!
+             </para>
+            
+             Calling the CreateDbCommand() on an instance of this decorator will return an instance of
+             <see cref="T:ResilienceDecorators.MySql.ResilientMySqlCommand"/> that will inherit the <see cref="T:ResilienceDecorators.MySql.ResilienceSettings"/>
+             and the <see cref="T:System.Action`2"/> action
+             </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlConnection.#ctor(MySql.Data.MySqlClient.MySqlConnection,ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Create an instance of <see cref="T:ResilienceDecorators.MySql.ResilientMySqlConnection"/> as a wrapper around the
+            underlying <see cref="T:MySql.Data.MySqlClient.MySqlConnection"/> instance with custom resilience settings and
+            something to do when a retry occurs
+            </summary>
+            <param name="innerConnection"></param>
+            <param name="resilienceSettings"></param>
+            <param name="onRetry"></param>
+        </member>
+        <member name="T:ResilienceDecorators.MySql.ResilientMySqlConnectionBuilder">
+            <summary>
+            Fluent API to create an instance of <see cref="T:ResilienceDecorators.MySql.ResilientMySqlConnection"/> class
+            </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlConnectionBuilder.WithResilienceSettings(ResilienceDecorators.MySql.ResilienceSettings)">
+            <summary>
+            Set up custom resilience settings. Calling this method in the builder chain is OPTIONAL
+            because a <see cref="T:ResilienceDecorators.MySql.ResilienceSettings"/> instance with default values will be
+            created. In other words, resilient out of the box.
+            </summary>
+            <param name="resilienceSettings"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.ResilientMySqlConnectionBuilder.WithOnRetryAction(System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Set up what to do when a retry occurs. Calling this method is OPTIONAL unless, you want
+            to take some action when a retry occurs for e.g. log the fact that it did occur.
+            </summary>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

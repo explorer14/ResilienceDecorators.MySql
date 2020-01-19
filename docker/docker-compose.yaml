@@ -1,0 +1,18 @@
+version: '3'
+services:  
+  mysql:
+    image: mysql:5.7  
+    ports:
+      - 3306:3306    
+    environment:
+      MYSQL_ROOT_PASSWORD: pass123
+    volumes: 
+      - ./mysql:/docker-entrypoint-initdb.d
+  schema:
+    image: boxfuse/flyway:5.2.4
+    command: -url=jdbc:mysql://mysql -schemas=Aman -user=root -password=pass123 migrate
+    volumes:
+      - "../database/migrations:/flyway/sql"
+    depends_on:
+      - mysql
+    restart: on-failure
