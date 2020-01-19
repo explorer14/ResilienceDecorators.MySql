@@ -7,15 +7,15 @@ These decorators ARE NOT guaranteed to work with ORMs so please exercise caution
 
 There are following main classes in this package:
 
-- `ResilientMySqlConnection` (wraps the `MySqlConnection::Open` inside a Polly retry with default `ResilienceSettings`)
-- `ResilientMySqlConnectionBuilder` (fluent API to create an instance of `ResilientMySqlConnection`)
-- `ResilientMySqlCommand` (wraps the `MySqlCommand::Execute*` operations inside a Polly retry with default `ResilienceSettings`)
-- `ResilientMySqlCommandBuilder` (fluent API to create an instance of `ResilientMySqlCommand`)
+- [`ResilientMySqlConnection`](ResilienceDecorators.MySql/ResilientMySqlConnection.cs) (wraps the `MySqlConnection::Open` inside a Polly retry with default `ResilienceSettings`)
+- [`ResilientMySqlConnectionBuilder`](ResilienceDecorators.MySql/ResilientMySqlConnectionBuilder.cs) (fluent API to create an instance of `ResilientMySqlConnection`)
+- [`ResilientMySqlCommand`](ResilienceDecorators.MySql/ResilientMySqlCommand.cs) (wraps the `MySqlCommand::Execute*` operations inside a Polly retry with default `ResilienceSettings`)
+- [`ResilientMySqlCommandBuilder`](ResilienceDecorators.MySql/ResilientMySqlCommandBuilder.cs) (fluent API to create an instance of `ResilientMySqlCommand`)
 
 Then there are support classes:
 
-- `ResilienceSettings` (stores setting for Polly retries)
-- `MySqlExceptionExtensions` (contains extension methods on the official `MySqlException` class)
+- [`ResilienceSettings`](ResilienceDecorators.MySql/ResilienceSettings.cs) (stores setting for Polly retries)
+- [`MySqlExceptionExtensions`](ResilienceDecorators.MySql/MySqlExceptionExtensions.cs) (contains extension methods on the official `MySqlException` class)
 
 ## Basic Usage
 
