@@ -1,7 +1,10 @@
 # Introduction 
-This package adds simple decorators around the [official MySql.Data package](https://www.nuget.org/packages/MySql.Data/) to achieve resilience and fault tolerance (against transient faults like failovers and reboots) using [Polly](https://github.com/App-vNext/Polly) retries. This is NOT a replacement for the official package and you are free to use either.
+
+This experimental package adds simple decorators around the [official MySql.Data package](https://www.nuget.org/packages/MySql.Data/) to achieve resilience and fault tolerance (against transient faults like failovers and reboots) using [Polly](https://github.com/App-vNext/Polly) retries. This is NOT a replacement for the official package and you are free to use either.
 
 These decorators ARE NOT guaranteed to work with ORMs so please exercise caution if you are using ORMs in your projects. Also, only retries are supported at the minute which means if the database doesn't recover for the duration of retries, the original exception will be propagated up to the application and if not handled gracefully, will stop the application.
+
+### NB: Transactions don't work properly at the moment! If you need to use transactions, please use the Polly retries directly without using the classes in this package. Apologies!
 
 ### [Nuget Package](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
 
