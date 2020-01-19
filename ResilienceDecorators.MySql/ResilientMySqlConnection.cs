@@ -92,7 +92,10 @@ namespace ResilienceDecorators.MySql
             ExecuteResiliently(innerConnection.Open);
 
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel) =>
-            innerConnection.BeginTransaction(isolationLevel);
+            innerConnection.BeginTransaction(
+                isolationLevel == IsolationLevel.Unspecified 
+                ? IsolationLevel.RepeatableRead // default for MySql is RepeatableRead
+                : isolationLevel);
 
         protected override DbCommand CreateDbCommand() =>
             new ResilientMySqlCommand(

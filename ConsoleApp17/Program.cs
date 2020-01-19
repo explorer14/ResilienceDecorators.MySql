@@ -18,7 +18,43 @@ namespace ConsoleApp17
 
             //DoWithoutResilience();
 
-            DoWithResilience().Wait();
+            //DoWithResilience().Wait();
+
+            DoWithTransactions();
+        }
+
+        private static void DoWithTransactions()
+        {
+            for (int i = 0; i < 10_1000; i++)
+            {
+                using (var conn = new ResilientMySqlConnectionBuilder()
+                    .ForConnectionString(ConnectionString)
+                    .WithOnRetryAction(LogRetry)
+                    .Build())
+                {
+                    conn.Open();
+
+                    var itemToInsert = new Record { Id = i + 1, Name = $"Aman {i + 1}" };
+                    var cmd = (ResilientMySqlCommand)conn.CreateCommand();
+                    cmd.CommandText = $"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')";
+
+                    using (var tran = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            var rows = cmd.ExecuteNonQuery();
+                            tran.Commit();
+                            Log.Logger.Information("Inserted {count} row successfully!", rows);
+                        }
+                        catch (Exception)
+                        {
+                            tran.Rollback();
+                        }
+                    }
+                }
+
+                Thread.Sleep(100);
+            }
         }
 
         private static async Task DoWithResilience()
