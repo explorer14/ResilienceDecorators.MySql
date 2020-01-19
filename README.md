@@ -8,6 +8,8 @@ These decorators ARE NOT guaranteed to work with ORMs so please exercise caution
 
 ### [Nuget Package](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
 
+[Accompanying post](https://amanagrawal.blog/2020/01/19/recovering-from-aurora-database-failovers-and-mysql-connection-pooling/)
+
 # Getting Started
 
 There are following main classes in this package:
