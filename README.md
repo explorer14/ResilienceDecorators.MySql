@@ -3,6 +3,8 @@ This package adds simple decorators around the official MySql.Data package to ac
 
 These decorators ARE NOT guaranteed to work with ORMs so please exercise caution if you are using ORMs in your projects. Also, only retries are supported at the minute which means if the database doesn't recover for the duration of retries, the original exception will be propagated up to the application and if not handled gracefully, will stop the application.
 
+### [Nuget Package](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
+
 # Getting Started
 
 There are following main classes in this package:
