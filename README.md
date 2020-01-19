@@ -81,7 +81,7 @@ private static void LogRetry(MySqlException mySqlException, TimeSpan time) =>
 
 # Running Locally
 
-The code in the `ConsoleApp17` can be run against a Dockerised MySql database _(so no hosted database needed)_. Make sure you have Docker installed on your machine. Then,
+The code in the [`ConsoleApp17`](ConsoleApp17/Program.cs) can be run against a Dockerised MySql database _(so no hosted database needed)_. Make sure you have Docker installed on your machine. Then,
 
 1. On the command line, `cd` into the `docker` folder.
 
