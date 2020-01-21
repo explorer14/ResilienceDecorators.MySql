@@ -2,9 +2,13 @@
 
 This experimental package adds simple decorators around the [official MySql.Data package](https://www.nuget.org/packages/MySql.Data/) to achieve resilience and fault tolerance (against transient faults like failovers and reboots) using [Polly](https://github.com/App-vNext/Polly) retries. This is NOT a replacement for the official package and you are free to use either.
 
-These decorators ARE NOT guaranteed to work with ORMs so please exercise caution if you are using ORMs in your projects. Also, only retries are supported at the minute which means if the database doesn't recover for the duration of retries, the original exception will be propagated up to the application and if not handled gracefully, will stop the application.
+### DISCLAIMER(S)-ish:
 
-### NB: Transactions don't work properly at the moment! If you need to use transactions, please use the Polly retries directly without using the classes in this package. Apologies!
+- These decorators ARE NOT guaranteed NOR have they been tested, to work with ORMs so please exercise caution if you are using ORMs in your projects. Also, only retries are supported at the minute which means if the database doesn't recover for the duration of retries, the original exception will be propagated up to the application and if not handled gracefully, will stop the application.
+
+- The failover condition was determined based on testing with AWS Aurora MySql failovers, I am not sure if other variants of MySql engines (or different set-ups) return different error codes. If you find this code doesn't work AT ALL with your flavour (or set-up) of MySql, please do feedback. I'd much rather Oracle provided mechanism for failover handling out of the box, because its possible for me to miss some corner case.
+
+- The `MySqlTransaction::Commit/Rollback` are not covered by retries at the moment, its something that I am still working on but feel free to make a PR for this!
 
 ### [Nuget Package](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
 
