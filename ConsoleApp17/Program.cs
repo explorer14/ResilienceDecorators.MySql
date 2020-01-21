@@ -44,11 +44,14 @@ namespace ConsoleApp17
                         {
                             var rows = cmd.ExecuteNonQuery();
                             tran.Commit();
-                            Log.Logger.Information("Inserted {count} row successfully!", rows);
+                            Log.Logger.Information(
+                                "Inserted {count} row successfully! Txn committed!", 
+                                rows);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             tran.Rollback();
+                            Log.Logger.Warning(ex, "Txn rolled back!");
                         }
                     }
                 }

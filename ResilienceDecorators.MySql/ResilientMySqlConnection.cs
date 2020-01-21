@@ -91,11 +91,28 @@ namespace ResilienceDecorators.MySql
         public override void Open() =>
             ExecuteResiliently(innerConnection.Open);
 
-        protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel) =>
-            innerConnection.BeginTransaction(
-                isolationLevel == IsolationLevel.Unspecified 
-                ? IsolationLevel.RepeatableRead // default for MySql is RepeatableRead
-                : isolationLevel);
+        protected override DbTransaction BeginDbTransaction(
+            IsolationLevel isolationLevel)
+        {
+            return retryPolicy.Execute(() =>
+            {
+                try
+                {
+                    EnsureConnectionIsOpen();
+                    return innerConnection.BeginTransaction(
+                            isolationLevel == IsolationLevel.Unspecified
+                            ? IsolationLevel.RepeatableRead // default for MySql is RepeatableRead
+                            : isolationLevel);
+                }
+                catch (MySqlException mySqlEx)
+                {
+                    if (mySqlEx.IsFailoverException())
+                        ResetConnection();
+
+                    throw mySqlEx;
+                }
+            });
+        }
 
         protected override DbCommand CreateDbCommand() =>
             new ResilientMySqlCommand(
@@ -128,6 +145,12 @@ namespace ResilienceDecorators.MySql
             // which it will after the connection is disposed. This increases the likelihood
             // of retries succeeding.
             MySqlConnection.ClearPool(innerConnection);
+        }
+
+        private void EnsureConnectionIsOpen()
+        {
+            if (innerConnection.State != ConnectionState.Open)
+                innerConnection.Open();
         }
     }
 }
