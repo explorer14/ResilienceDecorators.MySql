@@ -69,15 +69,11 @@ namespace ConsoleApp17
                     await conn.OpenAsync();
 
                     var itemToInsert = new Record { Id = i + 1, Name = $"Aman {i + 1}" };
-
-                    var cmd = (ResilientMySqlCommand)conn.CreateCommand();
-                    cmd.CommandText = $"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')";
-
-                    //var cmd = new ResilientMySqlCommandBuilder()
-                    //    .ForCommand($"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')")
-                    //    .WithConnection(conn.InnerConnection)
-                    //    .WithOnRetryAction(LogRetry)
-                    //    .Build();
+                    var cmd = new ResilientMySqlCommandBuilder()
+                        .ForCommand($"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')")
+                        .WithConnection(conn.InnerConnection)
+                        .WithOnRetryAction(LogRetry)
+                        .Build();
 
                     var rows = await cmd.ExecuteNonQueryAsync();
 

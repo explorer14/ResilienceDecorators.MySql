@@ -11,7 +11,7 @@ namespace ResilienceDecorators.MySql
     /// <para>
     ///     A resilient decorator around the native MySqlConnection class. Uses Polly retry policy to
     ///     retry failed connection attempts during database failover/reboot errors. The retries are
-    ///     configurable and will always default to 3 if not provided explicitly.
+    ///     configurable and will always default to 5 if not provided explicitly.
     /// </para>
     ///
     /// <para>
