@@ -152,5 +152,8 @@ namespace ResilienceDecorators.MySql
             if (innerConnection.State != ConnectionState.Open)
                 innerConnection.Open();
         }
+
+        protected override void Dispose(bool disposing) => 
+            innerConnection.Dispose();
     }
 }
