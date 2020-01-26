@@ -1,3 +1,7 @@
+# BREAKING CHANGE IN v2.0.0:
+
+The `ForConnectionString()` fluent API method on the `ResilientMySqlConnectionBuilder` has been deprecated in favour of passing in the connection string via the constructor which is a lot cleaner and more explicit. If you *are* using this package, please be aware that when you upgrade, you will need to change your code!
+
 # Introduction 
 
 This experimental package adds simple decorators around the [official MySql.Data package](https://www.nuget.org/packages/MySql.Data/) to achieve resilience and fault tolerance (against transient faults like failovers and reboots) using [Polly](https://github.com/App-vNext/Polly) retries. This is NOT a replacement for the official package and you are free to use either.
@@ -31,8 +35,7 @@ Then there are support classes:
 ## Basic Usage
 
 ```
-using (var conn = new ResilientMySqlConnectionBuilder()
-                    .ForConnectionString(ConnectionString)                    
+using (var conn = new ResilientMySqlConnectionBuilder(ConnectionString)                    
                     .Build())
 {
     await conn.OpenAsync();
@@ -49,15 +52,14 @@ using (var conn = new ResilientMySqlConnectionBuilder()
 ## Use the connection object to create a `DbCommand`
 
 ```
-using (var conn = new ResilientMySqlConnectionBuilder()
-                    .ForConnectionString(ConnectionString)                    
+using (var conn = new ResilientMySqlConnectionBuilder(ConnectionString)                            
                     .Build())
 {
     await conn.OpenAsync();
     var itemToInsert = new Record { Id = i + 1, Name = $"Aman {i + 1}" };
 
-    *var cmd = (ResilientMySqlCommand)conn.CreateCommand();*
-    *cmd.CommandText = $"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')";*    
+    var cmd = (ResilientMySqlCommand)conn.CreateCommand();
+    cmd.CommandText = $"INSERT INTO Aman.MyTable VALUES ({itemToInsert.Id}, '{itemToInsert.Name}')";
 
     var rows = await cmd.ExecuteNonQueryAsync();    
 }
@@ -66,8 +68,7 @@ using (var conn = new ResilientMySqlConnectionBuilder()
 ## Execute a custom action when a retry occurs (following an initial failure) for e.g. log the retry:
 
 ```
-using (var conn = new ResilientMySqlConnectionBuilder()
-                    .ForConnectionString(ConnectionString)
+using (var conn = new ResilientMySqlConnectionBuilder(ConnectionString)                    
                     .WithOnRetryAction(LogRetry)                    
                     .Build())
 {
@@ -103,6 +104,10 @@ The code in the [`ConsoleApp17`](ConsoleApp17/Program.cs) can be run against a D
 Simplest way to test the resilience bits is to just stop the container by issuing a `ctrl+c` command on the command line where the container is running. This will cause error `1042` i.e. `Unable to connec to host` and trigger spaced retries. By default it will try 5 times to reconnect, while its doing that, re-run `docker-compose up` to bring the database back "online". You will see the inserts resume where they left off.
 
 *NB*: Its still upto you to ensure that retrying writes, doesn't corrupt the data. Ideally retries should only be applied if you know that you can make the underlying operations idempotent. Reads are a perfect candidate for retries.
+
+# Word about tests
+
+Because the resilient classes are coupled to the underlying `MySqlxxx` variants, testing them in isolation is a bit hard without setting up some kind of localised infrastructure for e.g. running MySql in a Docker container _(as mentioned above)_ that can also be run in the deployment pipeline. This is why there are basic sanity tests in the solution for now, I will put some kind of integration tests in, that can run in the deployment pipeline as well, when I get some time.
 
 
 # Contributions

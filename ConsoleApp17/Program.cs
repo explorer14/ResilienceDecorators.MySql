@@ -27,8 +27,7 @@ namespace ConsoleApp17
         {
             for (int i = 0; i < 10_1000; i++)
             {
-                using (var conn = new ResilientMySqlConnectionBuilder()
-                    .ForConnectionString(ConnectionString)
+                using (var conn = new ResilientMySqlConnectionBuilder(ConnectionString)
                     .WithOnRetryAction(LogRetry)
                     .Build())
                 {
@@ -64,8 +63,7 @@ namespace ConsoleApp17
         {
             for (var i = 0; i < 10_000; i++)
             {
-                using (var conn = new ResilientMySqlConnectionBuilder()
-                    .ForConnectionString(ConnectionString)
+                using (var conn = new ResilientMySqlConnectionBuilder(ConnectionString)
                     .WithOnRetryAction(LogRetry)
                     .Build())
                 {

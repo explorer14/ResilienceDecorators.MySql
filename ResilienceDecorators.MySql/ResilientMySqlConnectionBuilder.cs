@@ -12,6 +12,21 @@ namespace ResilienceDecorators.MySql
         private ResilienceSettings resilienceSettings;
         private Action<MySqlException, TimeSpan> onRetry;
 
+        /// <summary>
+        /// Create a new instance of the <see cref="ResilientMySqlConnectionBuilder"/> class
+        /// </summary>
+        /// <param name="connectionString">MySql connection string to use</param>
+        public ResilientMySqlConnectionBuilder(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentNullException(
+                    nameof(connectionString), 
+                    "Cannot instantiate a resilient MySql connection without a valid connection string");
+
+            this.connectionString = connectionString;
+        }
+
+        [Obsolete("This method is deprecated. Pass the connection string via the constructor instead")]
         public ResilientMySqlConnectionBuilder ForConnectionString(
             string connectionString)
         {

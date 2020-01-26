@@ -54,8 +54,18 @@ namespace ResilienceDecorators.MySql
             ResilienceSettings resilienceSettings,
             Action<MySqlException, TimeSpan> onRetry = null)
         {
-            this.innerConnection = innerConnection;
-            this.resilienceSettings = resilienceSettings;
+            this.innerConnection = innerConnection ?? 
+                throw new ArgumentNullException(
+                    nameof(innerConnection), 
+                    "The underlying MySqlConnection cannot be null or invalid!");
+
+            this.resilienceSettings = resilienceSettings ??            
+                throw new ArgumentNullException(
+                    nameof(resilienceSettings),
+                    $"The ResilienceSettings cannot be null or invalid! " +
+                    $"You can pass in {nameof(ResilienceSettings.DefaultFailoverResilienceSettings)} " +
+                    $"if you are not sure what values you need.");
+
             this.onRetry = onRetry;
 
             BuildResiliencePolicy();

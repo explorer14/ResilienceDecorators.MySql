@@ -41,16 +41,29 @@ namespace ResilienceDecorators.MySql
         private readonly Action<MySqlException, TimeSpan> onRetry;
         private RetryPolicy retryPolicy;
 
+        /// <summary>
+        /// Create an instance of <see cref="ResilientMySqlCommand"/> class
+        /// </summary>
+        /// <param name="innerCommand">The underlying <see cref="MySqlCommand"/></param>
+        /// <param name="resilienceSettings">The <see cref="ResilienceSettings"/> to use.</param>
+        /// <param name="onRetry">
+        /// Custom <see cref="Action{MySqlException, TimeSpan}"/> to invoke when retries occur
+        /// </param>
         public ResilientMySqlCommand(
             MySqlCommand innerCommand,
             ResilienceSettings resilienceSettings,
             Action<MySqlException, TimeSpan> onRetry = null)
         {
-            this.innerCommand = innerCommand;
+            this.innerCommand = innerCommand ??
+                throw new ArgumentNullException(
+                    nameof(innerCommand),
+                    "The underlying MySqlCommand cannot be null or invalid!");
+            
             this.resilienceSettings = resilienceSettings ??
                 throw new ArgumentNullException(
                     nameof(resilienceSettings),
                     "Cannot create an instance of ResilientDbCommand without ResilienceSettings");
+
             this.onRetry = onRetry;
             BuildResiliencePolicy();
         }
