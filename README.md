@@ -90,6 +90,80 @@ private static void LogRetry(MySqlException mySqlException, TimeSpan time) =>
                        time);
 ```
 
+# NEW
+
+## Inherit from the RetryWrapper class to execute your data access code resiliently
+
+Say you have a repository interface in your project like so:
+
+```
+public interface IOrderRepository
+{    
+    Task<bool> CheckOrderExistsAsync(int orderId);
+}
+```
+
+The implementation of this interface which provides these business oriented data access methods, can be made resilient by inheriting your repository class with the `RetryWrapper` class like so:
+
+```
+public class OrderRepository : RetryWrapper, IOrderRepository
+{
+    private readonly string connectionString;
+    private readonly ResilienceSettings customResilienceSettings;
+
+    public OrderRepository(ResilienceSettings customResilienceSettings)
+    {
+        Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+        connectionString = "Server=127.0.0.1;Port=3306;Database=OrdersDB;Uid=root;Ssl Mode=Required;Pwd=<>;Pooling=True;ConnectionLifetime=60";
+        this.customResilienceSettings = customResilienceSettings;
+    }
+
+    public async Task<bool> CheckOrderExistsAsync(int orderId)
+    {
+        return await ExecuteWithAsyncRetries(async () =>
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM Orders WHERE OrderId = {orderId};";
+
+                var reader = await command.ExecuteReaderAsync();
+                Log.Logger.Information("Data was returned {val}", reader.HasRows);
+
+                return reader.HasRows;
+            }
+        },
+        customResilienceSettings,
+        LogRetry);
+    }
+
+    private void LogRetry(MySqlException mySqlException, TimeSpan time) =>
+        Log.Logger.Warning("Failed with {message}. Retrying in {@ts}...",
+                           mySqlException.Message,
+                           time);
+}
+```
+
+The caller of these repository methods doesn't need to know that the calls will be retried:
+
+```
+// passing null will simply result in default failover resilience settings being applied
+var store = new OrderRepository(null);
+
+await store.CheckOrderExistsAsync(2);
+```
+
+## If you just want the underlying Polly resilience policies without inheriting from the helper class, you can do that too:
+
+```
+MySqlFailoverRetryPolicies
+    .DefaultSyncPolicy(
+        customResilienceSettings, // your own overrides for the resilience settings
+        onRetry) // your own custom on retry action
+    .Execute(action);
+```
 
 # Running Locally
 

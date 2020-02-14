@@ -175,5 +175,77 @@
             <param name="onRetry"></param>
             <returns></returns>
         </member>
+        <member name="T:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper">
+            <summary>
+            Inherit from this class if you want to wrap your MySql interactions within retry policies yourself
+            without necessarily having to worry about Polly's verbose syntax. This class will also manage 
+            connections in the event of failovers.
+            </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.GetConnectionString">
+            <summary>
+            You must override this method to return the connection string in use by the caller,
+            for connection management reasons.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.ExecuteWithSyncRetries``1(System.Func{``0},ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Synchronous retry policy that returns T
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="action"></param>
+            <param name="customResilienceSettings"></param>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.ExecuteWithSyncRetries(System.Action,ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Synchronous retry policy of void return type
+            </summary>
+            <param name="action"></param>
+            <param name="customResilienceSettings"></param>
+            <param name="onRetry"></param>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.ExecuteWithAsyncRetries``1(System.Func{System.Threading.Tasks.Task{``0}},ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Asynchronous retry policy that returns Task of <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="action"></param>
+            <param name="customResilienceSettings"></param>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.ExecuteWithAsyncRetries(System.Func{System.Threading.Tasks.Task},ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Asynchronous retry policy of Task return type
+            </summary>
+            <param name="action"></param>
+            <param name="customResilienceSettings"></param>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ResilienceDecorators.MySql.RetryPolicies.MySqlFailoverRetryPolicies">
+            <summary>
+            Pair of default retry policies - sync and async
+            </summary>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryPolicies.MySqlFailoverRetryPolicies.DefaultSyncPolicy(ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Default sync policy
+            </summary>
+            <param name="resilienceSettings"></param>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ResilienceDecorators.MySql.RetryPolicies.MySqlFailoverRetryPolicies.DefaultAsyncPolicy(ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">
+            <summary>
+            Default async policy
+            </summary>
+            <param name="resilienceSettings"></param>
+            <param name="onRetry"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

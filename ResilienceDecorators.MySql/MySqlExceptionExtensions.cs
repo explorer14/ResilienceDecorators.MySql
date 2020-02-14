@@ -2,9 +2,9 @@
 
 namespace ResilienceDecorators.MySql
 {
-    internal static class MySqlExceptionExtensions
+    public static class MySqlExceptionExtensions
     {
-        internal static bool IsFailoverException(this MySqlException mySqlException)
+        public static bool IsFailoverException(this MySqlException mySqlException)
         {
             return mySqlException.Number == (int)MySqlErrorCode.UnableToConnectToHost ||
                    mySqlException.Number == (int)MySqlErrorCode.OptionPreventsStatement ||
