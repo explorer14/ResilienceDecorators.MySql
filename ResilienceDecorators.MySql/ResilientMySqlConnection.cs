@@ -164,6 +164,6 @@ namespace ResilienceDecorators.MySql
         }
 
         protected override void Dispose(bool disposing) => 
-            innerConnection.Dispose();
+            innerConnection?.Dispose();
     }
 }
