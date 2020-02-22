@@ -6,6 +6,7 @@ namespace ResilienceDecorators.MySql
     /// <summary>
     /// Fluent API to create an instance of <see cref="ResilientMySqlConnection"/> class
     /// </summary>
+    [Obsolete("Please use RetryWrapper, these decorator classes will eventually be removed!")]
     public class ResilientMySqlConnectionBuilder
     {
         private string connectionString;

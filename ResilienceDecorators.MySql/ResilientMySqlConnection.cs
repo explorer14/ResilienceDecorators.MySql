@@ -34,6 +34,7 @@ namespace ResilienceDecorators.MySql
     /// <see cref="ResilientMySqlCommand"/> that will inherit the <see cref="ResilienceSettings"/>
     /// and the <see cref="Action{MySqlException, TimeSpan}"/> action
     /// </summary>
+    [Obsolete("Please use RetryWrapper, these decorator classes will eventually be removed!")]
     public class ResilientMySqlConnection : DbConnection
     {
         private readonly MySqlConnection innerConnection;

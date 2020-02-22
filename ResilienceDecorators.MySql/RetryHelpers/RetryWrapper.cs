@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 namespace ResilienceDecorators.MySql.RetryHelpers
 {
     /// <summary>
-    /// Inherit from this class if you want to wrap your MySql interactions within retry policies yourself
-    /// without necessarily having to worry about Polly's verbose syntax. This class will also manage 
-    /// connections in the event of failovers.
+    /// Inheriting from this class and invoking its methods, will allow your MySql database
+    /// interactions to recover from failovers.
     /// </summary>
     public abstract class RetryWrapper
     {

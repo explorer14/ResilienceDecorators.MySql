@@ -3,6 +3,7 @@ using System;
 
 namespace ResilienceDecorators.MySql
 {
+    [Obsolete("Please use RetryWrapper, these decorator classes will eventually be removed!")]
     public class ResilientMySqlCommandBuilder
     {
         private string commandText;

@@ -34,6 +34,7 @@ namespace ResilienceDecorators.MySql
     ///     around MySqlCommand instance. Also because I wanted to keep as much stuff native as possible.
     /// </para>
     /// </summary>
+    [Obsolete("Please use RetryWrapper, these decorator classes will eventually be removed!")]
     public sealed class ResilientMySqlCommand : DbCommand
     {
         private readonly MySqlCommand innerCommand;
