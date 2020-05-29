@@ -1,3 +1,7 @@
+# What's new in v3.0.0
+
+All the **ResilientXXX** classes have been removed, this will be a breaking change for clients that are still using v2.x. Please switch over to v3.0!
+
 # What's new in v2.2.0
 
 No new features, really! Except I've chosen to **deprecate all the ResilientXXX classes** because the `RetryWrapper` approach is more reliable (covers all database interactions) and simpler to use. The next major version v3.0.0 will NOT have these classes, if you are using these, please switch over to using `RetryWrapper`. 
