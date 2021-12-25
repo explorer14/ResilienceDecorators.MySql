@@ -11,7 +11,16 @@ variables:
 
 steps:
   - task: PowerShell@2
+    displayName: 'Verify PR'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    inputs:
+      filePath: 'build.ps1'
+      arguments: '-Target Test'
+      pwsh: true
+
+  - task: PowerShell@2
     displayName: 'Publish to Nuget'
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       filePath: 'build.ps1'
       arguments: '-Target PushToNuget'

@@ -63,7 +63,7 @@ Task("Test")
  });
 
 Task("Pack")
-	.IsDependentOn("Test")
+	.IsDependentOn("Build")
 	.Does(()=>
 {
 
