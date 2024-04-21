@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using Polly;
+﻿using Polly;
 using Polly.Retry;
 using System;
+using MySql.Data.MySqlClient;
 
 namespace ResilienceDecorators.MySql.RetryPolicies
 {

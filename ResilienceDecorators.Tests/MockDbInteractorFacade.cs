@@ -1,8 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using ResilienceDecorators.MySql;
+﻿using ResilienceDecorators.MySql;
 using ResilienceDecorators.MySql.RetryHelpers;
 using System;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace ResilienceDecorators.Tests
 {
@@ -72,18 +72,18 @@ namespace ResilienceDecorators.Tests
         public async Task<Record> GetOneAsync()
         {
             return await ExecuteWithAsyncRetries(async () =>
-            {
-                if (Retries >= resilienceSettings.RetryCount)
+                {
+                    if (Retries >= resilienceSettings.RetryCount)
+                        return Record.SampleRecord;
+
+                    ++Retries;
+
+                    await Task.Delay(1);
+
+                    ThrowMySqlException();
+
                     return Record.SampleRecord;
-
-                ++Retries;
-
-                await Task.Delay(1);
-
-                ThrowMySqlException();
-
-                return Record.SampleRecord;
-            },
+                },
             customResilienceSettings: resilienceSettings,
             onRetry: onRetry);
         }
@@ -108,18 +108,18 @@ namespace ResilienceDecorators.Tests
         public async Task<Record[]> GetMultipleAsync()
         {
             return await ExecuteWithAsyncRetries(async () =>
-            {
-                if (Retries >= resilienceSettings.RetryCount)
+                {
+                    if (Retries >= resilienceSettings.RetryCount)
+                        return new[] { Record.SampleRecord };
+
+                    ++Retries;
+
+                    await Task.Delay(1);
+
+                    ThrowMySqlException();
+
                     return new[] { Record.SampleRecord };
-
-                ++Retries;
-
-                await Task.Delay(1);
-
-                ThrowMySqlException();
-
-                return new[] { Record.SampleRecord };
-            },
+                },
             customResilienceSettings: resilienceSettings,
             onRetry: onRetry);
         }
