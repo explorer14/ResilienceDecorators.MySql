@@ -22,7 +22,8 @@ class Build : NukeBuild
     Target Compile => _ => _
         .Executes(() =>
         {
-            DotNetTasks.DotNetBuild();
+            DotNetTasks.DotNetBuild(b=>
+                b.SetConfiguration(Configuration));
         });
 
     Target Test => _ => _
@@ -33,12 +34,12 @@ class Build : NukeBuild
         });
 
     Target Pack => _ => _
-        .DependsOn(Test)
         .Executes(() =>
         {
             DotNetTasks.DotNetPack(c => 
                 c.SetOutputDirectory(PackagePublishPath)
-                    .SetProject(ProjectToPackage));
+                    .SetProject(ProjectToPackage)
+                    .SetConfiguration(Configuration));
         });
 
     Target PushToNuget => _ => _
