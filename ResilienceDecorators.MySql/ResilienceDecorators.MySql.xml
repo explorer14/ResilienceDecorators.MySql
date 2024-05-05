@@ -84,6 +84,7 @@
             <param name="action"></param>
             <param name="customResilienceSettings"></param>
             <param name="onRetry"></param>
+            <param name="connv"></param>
             <returns></returns>
         </member>
         <member name="M:ResilienceDecorators.MySql.RetryHelpers.RetryWrapper.ExecuteWithAsyncRetries(System.Func{System.Threading.Tasks.Task},ResilienceDecorators.MySql.ResilienceSettings,System.Action{MySql.Data.MySqlClient.MySqlException,System.TimeSpan})">

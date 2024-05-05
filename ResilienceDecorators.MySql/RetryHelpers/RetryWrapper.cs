@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using ResilienceDecorators.MySql.RetryPolicies;
+﻿using ResilienceDecorators.MySql.RetryPolicies;
 using System;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace ResilienceDecorators.MySql.RetryHelpers
 {
@@ -85,9 +85,9 @@ namespace ResilienceDecorators.MySql.RetryHelpers
         /// <param name="action"></param>
         /// <param name="customResilienceSettings"></param>
         /// <param name="onRetry"></param>
+        /// <param name="connv"></param>
         /// <returns></returns>
-        protected async Task<T> ExecuteWithAsyncRetries<T>(
-            Func<Task<T>> action,
+        protected async Task<T> ExecuteWithAsyncRetries<T>(Func<Task<T>> action,
             ResilienceSettings customResilienceSettings = null,
             Action<MySqlException, TimeSpan> onRetry = null) =>
 
@@ -139,12 +139,10 @@ namespace ResilienceDecorators.MySql.RetryHelpers
                     }
                 });
 
-        private void ClearConnectionPoolIfDatabaseFailingOver(
-            MySqlException ex)
+        private void ClearConnectionPoolIfDatabaseFailingOver(MySqlException ex)
         {
             if (ex.IsFailoverException())
-                MySqlConnection.ClearPool(
-                    new MySqlConnection(GetConnectionString()));
+                MySqlConnection.ClearPool(new MySqlConnection(GetConnectionString()));
         }
     }
 }

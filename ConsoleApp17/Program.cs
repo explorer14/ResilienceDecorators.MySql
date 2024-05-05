@@ -1,14 +1,15 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
-using MySql.Data.MySqlClient;
 using ResilienceDecorators.MySql;
 using ResilienceDecorators.MySql.RetryHelpers;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace ConsoleApp17
 {
@@ -16,13 +17,13 @@ namespace ConsoleApp17
     {
         private static string ConnectionString = "Server=127.0.0.1;Port=3306;Database=Aman;Uid=root;Ssl Mode=Required;Pwd=pass123;Pooling=True;MinimumPoolSize=10;ConnectionLifetime=60";
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
             //DoWithoutResilience();
 
-            DoWithResilience();
+            await DoWithResilience();
         }
 
         private static void DoWithoutResilience()
@@ -47,14 +48,14 @@ namespace ConsoleApp17
             }
         }
 
-        private static void DoWithResilience()
+        private static async Task DoWithResilience()
         {
             var facade = new TableFacade(ConnectionString);
 
             for (int x = 0; x < 1_000; x++)
             {
-                var data = facade.GetIt().Result;
-                Thread.Sleep(500);
+                var data = await facade.GetIt();
+                await Task.Delay(500);
             }
         }
 
@@ -109,10 +110,10 @@ namespace ConsoleApp17
         {
             return await ExecuteWithAsyncRetries<IReadOnlyCollection<Record>>(async () =>
             {
-                using (var conn = new MySqlConnection(connectionString))
+                using (var connv = new MySqlConnection(connectionString))
                 {
-                    await conn.OpenAsync();
-                    var result = await conn.QueryAsync<Record>("SELECT * FROM Aman.MyTable");
+                    await connv.OpenAsync();
+                    var result = await connv.QueryAsync<Record>("SELECT * FROM Aman.MyTable");
 
                     Log.Logger.Information("Retrieved!");
 
