@@ -1,3 +1,9 @@
+[![](https://img.shields.io/badge/Nuget-v4.0.0-green?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
+
+# What's new in v4.0.0
+
+Core library updated to support .NET 6.0 and dependencies upgraded. 
+
 # What's new in v3.0.0
 
 All the **ResilientXXX** classes have been removed, this will be a breaking change for clients that are still using v2.x. Please switch over to v3.0!
@@ -11,8 +17,6 @@ No new features, really! Except I've chosen to **deprecate all the ResilientXXX 
 A package for C#/.NET Core applications to provide failover recovery for MySql database interactions. Uses the [MySql.Data official .NET Core driver](https://www.nuget.org/packages/MySql.Data/) and [Polly](https://github.com/App-vNext/Polly) retry policies internally.
 
 [Accompanying post](https://amanagrawal.blog/2020/01/19/recovering-from-aurora-database-failovers-and-mysql-connection-pooling/) that goes into details of failovers and connection management in the .NET Core MySql driver.
-
-# [Nuget Package](https://www.nuget.org/packages/ResilienceDecorators.MySql/)
 
 # Getting Started
 
